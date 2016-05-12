@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
  * Class ClientController
  * @package App\Http\Controllers
  */
-class ClientController extends Controller
+class ClientsController extends Controller
 {
 
     /**
@@ -36,7 +36,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        return $this->service->all();
+        return $this->repository->all();
     }
 
     /**

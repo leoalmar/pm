@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class ClientsTableSeeder extends Seeder
+class ProjectNoteTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,7 +11,6 @@ class ClientsTableSeeder extends Seeder
      */
     public function run()
     {
-        //\App\Entities\Client::truncate();
-        factory(App\Entities\Client::class,10)->create();
+        factory(App\Entities\ProjectNote::class,50)->create();
     }
 }
