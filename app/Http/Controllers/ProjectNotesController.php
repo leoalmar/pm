@@ -53,19 +53,6 @@ class ProjectNotesController extends Controller
         return view('projectNotes.index', compact('projectNotes'));
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-
-        return view('projectNotes.create');
-    }
-
-
     /**
      * Store a newly created resource in storage.
      *
@@ -113,9 +100,9 @@ class ProjectNotesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, $noteId)
     {
-        $projectNote = $this->repository->find($id);
+        $projectNote = $this->repository->findWhere(['project_id' => $id, 'id' => $noteId]);
 
         if (request()->wantsJson()) {
 
@@ -127,23 +114,6 @@ class ProjectNotesController extends Controller
         return view('projectNotes.show', compact('projectNote'));
     }
 
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-
-        $projectNote = $this->repository->find($id);
-
-        return view('projectNotes.edit', compact('projectNote'));
-    }
-
-
     /**
      * Update the specified resource in storage.
      *
@@ -152,14 +122,14 @@ class ProjectNotesController extends Controller
      *
      * @return Response
      */
-    public function update(ProjectNoteUpdateRequest $request, $id)
+    public function update(ProjectNoteUpdateRequest $request, $id, $noteId)
     {
 
         try {
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
-            $projectNote = $this->repository->update($request->all(), $id);
+            $projectNote = $this->repository->update($request->all(), $noteId);
 
             $response = [
                 'message' => 'ProjectNote updated.',
