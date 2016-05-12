@@ -23,3 +23,10 @@ Route::post('project','ProjectsController@store');
 Route::get('project/{id}','ProjectsController@show');
 Route::put('project/{id}','ProjectsController@update');
 Route::delete('project/{id}','ProjectsController@destroy');
+
+
+
+
+Route::post('oauth/access_token', function() {
+    return Response::json(Authorizer::issueAccessToken());
+});
