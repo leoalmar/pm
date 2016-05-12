@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use LucaDegasperi\OAuth2Server\Authorizer;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\ProjectCreateRequest;
@@ -43,7 +44,7 @@ class ProjectsController extends Controller
     {
 
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $projects = $this->repository->all();
+        $projects = $this->repository->findWhere(['owner_id' => \Authorizer::getResourceOwnerId() ]);
 
         if (request()->wantsJson()) {
 
@@ -105,6 +106,11 @@ class ProjectsController extends Controller
      */
     public function show($id)
     {
+
+        if( ! $this->checkProjectOwnerId($id) ){
+            return ['error' => 'Access forbidden'];
+        }
+
         $project = $this->repository->find($id);
 
         if (request()->wantsJson()) {
@@ -128,6 +134,11 @@ class ProjectsController extends Controller
      */
     public function update(ProjectUpdateRequest $request, $id)
     {
+
+        if( ! $this->checkProjectOwnerId($id) ){
+            return ['error' => 'Access forbidden'];
+        }
+
 
         try {
 
@@ -170,6 +181,11 @@ class ProjectsController extends Controller
      */
     public function destroy($id)
     {
+
+        if( ! $this->checkProjectOwnerId($id) ){
+            return ['error' => 'Access forbidden'];
+        }
+
         $deleted = $this->repository->delete($id);
 
         if (request()->wantsJson()) {
@@ -181,5 +197,11 @@ class ProjectsController extends Controller
         }
 
         return redirect()->back()->with('message', 'Project deleted.');
+    }
+
+    private function checkProjectOwnerId($projectId)
+    {
+        $userId = \Authorizer::getResourceOwnerId();
+        return $this->repository->isOwner($projectId, $userId);
     }
 }
