@@ -57,18 +57,6 @@ class ProjectsController extends Controller
 
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-
-        return view('projects.create');
-    }
-
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  ProjectCreateRequest $request
@@ -127,22 +115,6 @@ class ProjectsController extends Controller
         }
 
         return view('projects.show', compact('project'));
-    }
-
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-
-        $project = $this->repository->find($id);
-
-        return view('projects.edit', compact('project'));
     }
 
 
