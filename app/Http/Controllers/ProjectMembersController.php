@@ -5,30 +5,29 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use LucaDegasperi\OAuth2Server\Authorizer;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
-use App\Http\Requests\ProjectCreateRequest;
-use App\Http\Requests\ProjectUpdateRequest;
-use App\Repositories\ProjectRepository;
-use App\Validators\ProjectValidator;
+use App\Http\Requests\ProjectMemberCreateRequest;
+use App\Http\Requests\ProjectMemberUpdateRequest;
+use App\Repositories\ProjectMemberRepository;
+use App\Validators\ProjectMemberValidator;
 
 
-class ProjectsController extends Controller
+class ProjectMembersController extends Controller
 {
 
     /**
-     * @var ProjectRepository
+     * @var ProjectMemberRepository
      */
     protected $repository;
 
     /**
-     * @var ProjectValidator
+     * @var ProjectMemberValidator
      */
     protected $validator;
 
 
-    public function __construct(ProjectRepository $repository, ProjectValidator $validator)
+    public function __construct(ProjectMemberRepository $repository, ProjectMemberValidator $validator)
     {
         $this->repository = $repository;
         $this->validator  = $validator;
@@ -44,38 +43,50 @@ class ProjectsController extends Controller
     {
 
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $projects = $this->repository->findWhere(['owner_id' => \Authorizer::getResourceOwnerId() ]);
+        $projectMembers = $this->repository->all();
 
         if (request()->wantsJson()) {
 
             return response()->json([
-                'data' => $projects,
+                'data' => $projectMembers,
             ]);
         }
 
-        return view('projects.index', compact('projects'));
+        return view('projectMembers.index', compact('projectMembers'));
+    }
+
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+
+        return view('projectMembers.create');
     }
 
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  ProjectCreateRequest $request
+     * @param  ProjectMemberCreateRequest $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(ProjectCreateRequest $request)
+    public function store(ProjectMemberCreateRequest $request)
     {
 
         try {
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
 
-            $project = $this->repository->create($request->all());
+            $projectMember = $this->repository->create($request->all());
 
             $response = [
-                'message' => 'Project created.',
-                'data'    => $project->toArray(),
+                'message' => 'ProjectMember created.',
+                'data'    => $projectMember->toArray(),
             ];
 
             if ($request->wantsJson()) {
@@ -106,49 +117,55 @@ class ProjectsController extends Controller
      */
     public function show($id)
     {
-
-        if( ! $this->checkProjectOwnerId($id) ){
-            return ['error' => 'Access forbidden'];
-        }
-
-        $project = $this->repository->find($id);
+        $projectMember = $this->repository->find($id);
 
         if (request()->wantsJson()) {
 
             return response()->json([
-                'data' => $project,
+                'data' => $projectMember,
             ]);
         }
 
-        return view('projects.show', compact('project'));
+        return view('projectMembers.show', compact('projectMember'));
+    }
+
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+
+        $projectMember = $this->repository->find($id);
+
+        return view('projectMembers.edit', compact('projectMember'));
     }
 
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  ProjectUpdateRequest $request
+     * @param  ProjectMemberUpdateRequest $request
      * @param  string            $id
      *
      * @return Response
      */
-    public function update(ProjectUpdateRequest $request, $id)
+    public function update(ProjectMemberUpdateRequest $request, $id)
     {
-
-        if( ! $this->checkProjectOwnerId($id) ){
-            return ['error' => 'Access forbidden'];
-        }
-
 
         try {
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
-            $project = $this->repository->update($request->all(), $id);
+            $projectMember = $this->repository->update($request->all(), $id);
 
             $response = [
-                'message' => 'Project updated.',
-                'data'    => $project->toArray(),
+                'message' => 'ProjectMember updated.',
+                'data'    => $projectMember->toArray(),
             ];
 
             if ($request->wantsJson()) {
@@ -181,29 +198,16 @@ class ProjectsController extends Controller
      */
     public function destroy($id)
     {
-
-        if( ! $this->checkProjectOwnerId($id) ){
-            return ['error' => 'Access forbidden'];
-        }
-
         $deleted = $this->repository->delete($id);
 
         if (request()->wantsJson()) {
 
             return response()->json([
-                'message' => 'Project deleted.',
+                'message' => 'ProjectMember deleted.',
                 'deleted' => $deleted,
             ]);
         }
 
-        return redirect()->back()->with('message', 'Project deleted.');
+        return redirect()->back()->with('message', 'ProjectMember deleted.');
     }
-
-    private function checkProjectOwnerId($projectId)
-    {
-        $userId = \Authorizer::getResourceOwnerId();
-        return $this->repository->isOwner($projectId, $userId);
-    }
-
-
 }

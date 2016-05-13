@@ -50,6 +50,7 @@ class CreateOauthAccessTokensTable extends Migration
      */
     public function down()
     {
+
         Schema::table('oauth_access_tokens', function (Blueprint $table) {
             $table->dropForeign('oauth_access_tokens_session_id_foreign');
         });
