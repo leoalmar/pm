@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Presenters\ProjectPresenter;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\ProjectRepository;
@@ -46,7 +47,8 @@ class ProjectRepositoryEloquent extends BaseRepository implements ProjectReposit
 
     public function isOwner($id, $userId)
     {
-        if( $this->findWhere(['id' => $id, 'owner_id' => $userId])->first() ){
+
+        if( Project::where(['id' => $id, 'owner_id' => $userId])->first() ){
             return true;
         }
         
@@ -62,5 +64,10 @@ class ProjectRepositoryEloquent extends BaseRepository implements ProjectReposit
         }
 
         return false;
+    }
+
+    public function presenter()
+    {
+        return ProjectPresenter::class;
     }
 }

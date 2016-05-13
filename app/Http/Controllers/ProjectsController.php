@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use LucaDegasperi\OAuth2Server\Authorizer;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\ProjectCreateRequest;
@@ -43,7 +42,7 @@ class ProjectsController extends Controller
     public function index()
     {
 
-        $userId = Authorizer::getResourceOwnerId();
+        $userId = \Authorizer::getResourceOwnerId();
 
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
         $projects = $this->repository->findWhere(['owner_id' => $userId ]);
@@ -203,7 +202,7 @@ class ProjectsController extends Controller
 
     private function checkProjectOwnerId($projectId)
     {
-        $userId = Authorizer::getResourceOwnerId();
+        $userId = \Authorizer::getResourceOwnerId();
         return $this->repository->isOwner($projectId, $userId);
     }
 
