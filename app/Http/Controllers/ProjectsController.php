@@ -43,8 +43,10 @@ class ProjectsController extends Controller
     public function index()
     {
 
+        $userId = Authorizer::getResourceOwnerId();
+
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $projects = $this->repository->findWhere(['owner_id' => \Authorizer::getResourceOwnerId() ]);
+        $projects = $this->repository->findWhere(['owner_id' => $userId ]);
 
         if (request()->wantsJson()) {
 
@@ -201,7 +203,7 @@ class ProjectsController extends Controller
 
     private function checkProjectOwnerId($projectId)
     {
-        $userId = \Authorizer::getResourceOwnerId();
+        $userId = Authorizer::getResourceOwnerId();
         return $this->repository->isOwner($projectId, $userId);
     }
 
