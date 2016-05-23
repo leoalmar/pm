@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entities\Client;
 use App\Repositories\ClientRepository;
 use App\Services\ClientService;
 use Illuminate\Http\Request;
@@ -54,7 +55,7 @@ class ClientsController extends Controller
      */
     public function show($id)
     {
-        return $this->repository->find($id);
+        return Client::find($id);
     }
 
     /**
@@ -72,6 +73,6 @@ class ClientsController extends Controller
      */
     public function destroy($id)
     {
-        return $this->repository->destroy($id);
+        Client::find($id)->delete();
     }
 }
